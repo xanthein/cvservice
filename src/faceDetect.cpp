@@ -312,7 +312,8 @@ void recognizeFaces()
 				personIDs.push_back(UNKNOWN_PERSON_ID);
 		}
 
-		updateSeenFaces();
+		if (!performRegistration)
+			updateSeenFaces();
 
 	    for (uint i = 0; i < personIDs.size(); i++)
 		{
