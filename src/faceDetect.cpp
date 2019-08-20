@@ -301,14 +301,17 @@ void recognizeFaces()
 		
 			vector<float> features = getFaceFeatures(crop);
 
-			if(!face_db.empty())
+			bool unknow_face = true;
+			if(!face_db.empty()) {
 				for(auto && face : face_db) {
-					if(ComputDistance(features, face.features) < 0.3)
+					if(ComputDistance(features, face.features) < 0.3) {
 						personIDs.push_back(face.personID);
-					else
-						personIDs.push_back(UNKNOWN_PERSON_ID);
+						unknow_face = false;
+						break;
+					}
 				}
-			else
+			}
+			if (unknow_face)
 				personIDs.push_back(UNKNOWN_PERSON_ID);
 		}
 
