@@ -9,8 +9,6 @@ using namespace InferenceEngine;
 class InferEngine
 {
 protected:
-	InferencePlugin plugin;
-	CNNNetwork network;
 	InferRequest::Ptr request;
 
 	string input_name;

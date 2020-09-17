@@ -1,34 +1,16 @@
-#include <ext_list.hpp>
 #include "engine.hpp"
 
 InferEngine::InferEngine()
 {
-    try {
-		plugin = PluginDispatcher().getPluginByDevice("CPU");
-		//const Version *pluginVersion = plugin.GetVersion();
-		//cout << "API version: " << pluginVersion->apiVersion.major << "." << pluginVersion->apiVersion.minor << endl;
-		//cout << "Description: " << pluginVersion->description << endl;
-       
-		//add important layers not come with CPU plugin.
-		plugin.AddExtension(make_shared<Extensions::Cpu::CpuExtensions>());     
-	}
-	catch (const exception& error) {
-        cout << error.what() << endl;
-    }
-    catch (...) {
-        cout << "Unknown/internal exception happened." << endl;
-    }
 }
 
 InferEngine::~InferEngine() {}
 
 void InferEngine::loadNetwork(const string network_name, size_t input_size)
 {
-	CNNNetReader network_reader;
-	network_reader.ReadNetwork(network_name + ".xml");
-	network_reader.ReadWeights(network_name + ".bin");
-	network_reader.getNetwork().setBatchSize(1);
-	network = network_reader.getNetwork();
+	Core ie;
+	auto network = ie.ReadNetwork(network_name + ".xml");
+	network.setBatchSize(1);
 
 	InputsDataMap input_info(network.getInputsInfo());
 
@@ -51,7 +33,7 @@ void InferEngine::loadNetwork(const string network_name, size_t input_size)
 	output_data->setPrecision(Precision::FP32);
 	output_name = output_info.begin()->first;
 
-	ExecutableNetwork executable_network = plugin.LoadNetwork(network, {});
+	ExecutableNetwork executable_network = ie.LoadNetwork(network, "CPU");
 	request = executable_network.CreateInferRequestPtr();
 }
 
@@ -178,7 +160,7 @@ void LandmarkDetect::enqueue(const Mat &frame)
 vector<float> LandmarkDetect::operator[] (int idx) const
 {
 	auto landmarksBlob = request->GetBlob(output_name);
-    auto n_lm = landmarksBlob->dims()[2];
+    auto n_lm = landmarksBlob->getTensorDesc().getDims()[1];
     const float *normed_coordinates = request->GetBlob(output_name)->buffer().as<float *>();
 	vector<float> normedLandmarks;
 

@@ -36,7 +36,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES "CMAKE_CXX_FLAGS" "${CMAKE_CXX_F
                       COMPILE_PDB_NAME ${TARGET_NAME})
 
 
-target_link_libraries(${TARGET_NAME} IE::ie_cpu_extension ${InferenceEngine_LIBRARIES} ${OpenCV_LIBS} paho-mqtt3cs)
+target_link_libraries(${TARGET_NAME} ${IE_LIBRARIES} ${InferenceEngine_LIBRARIES} ${OpenCV_LIBS} paho-mqtt3cs)
 
 if(UNIX)
     target_link_libraries(${TARGET_NAME} ${LIB_DL})
